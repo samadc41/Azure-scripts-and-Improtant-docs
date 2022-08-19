@@ -1,0 +1,26 @@
+& {                                                                                                             
+>> foreach ($storageAccount in Get-AzStorageAccount) {            
+>> $storageAccountName = $storageAccount.StorageAccountName   
+>> $resourceGroupName = $storageAccount.ResourceGroupName   
+>>    
+>>    
+>>   # Get storage account key   
+>>      $storageAccountKey = (Get-AzStorageAccountKey -Name $storageAccountName -ResourceGroupName $resourceGroupName).Value[0]   
+>>        
+>>      # Create storage account context using above key   
+>>      $context = New-AzStorageContext -StorageAccountName $storageAccountName -StorageAccountKey $storageAccountKey   
+>>        
+>>      # Get the last modified date   
+>>      $lastModified = Get-AzStorageContainer -Context $context 
+>>          | Sort-Object -Property @{Expression = {$_.LastModified.DateTime}}    
+>>              | Select-Object -Last 1 -ExpandProperty LastModified    
+>>    
+>>              # Collect the information to output to a table when the for loop has completed   
+>>              New-Object psobject -Property @{   
+>>                  Name = $storageAccountName;   
+>>                  LastModified = $lastModified.DateTime;
+>>                  ResourceGroupName = $resourceGroupName   
+>>              }   
+>> 
+>>  }
+>> } | Format-Table Name, LastModified, ResourceGroupName -autosize
