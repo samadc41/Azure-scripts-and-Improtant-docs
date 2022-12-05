@@ -1,0 +1,4 @@
+$resource = Get-AzResource | ForEach-Object{
+    $tags = @{"environment"="Production"; "location"=$_.Location; "product"=$_.ResourceId}
+    New-AzTag -ResourceId $_.ResourceId -Tag $tags
+  }
