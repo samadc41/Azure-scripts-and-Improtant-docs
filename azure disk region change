@@ -1,0 +1,27 @@
+sourceDiskName="lotvantage-prod-ftphost"
+sourceRG="lotvantage-prod-cenus-RG"
+targetDiskName="lotvantage-prod-disk"
+targetRG="lotvantage-prod-cenus-RG"
+targetLocation="centralus"
+#Expected value for OS is either "Windows" or "Linux"
+targetOS="Linux"
+
+sourceDiskSizeBytes=$(az disk show -g $sourceRG -n $sourceDiskName --query '[diskSizeBytes]' -o tsv)
+
+az disk create -g $targetRG -n $targetDiskName -l $targetLocation --os-type $targetOS --for-upload --upload-size-bytes $(($sourceDiskSizeBytes+512)) --sku standard_lrs
+
+targetSASURI=$(az disk grant-access -n $targetDiskName -g $targetRG  --access-level Write --duration-in-seconds 86400 -o tsv)
+
+sourceSASURI=$(az disk grant-access -n $sourceDiskName -g $sourceRG --duration-in-seconds 86400 --query [accessSas] -o tsv)
+
+azcopy copy $sourceSASURI $targetSASURI --blob-type PageBlob
+
+if we got error please run 
+
+$sourceSASURI    then "copy url without the last" :
+$targetSASURI      then "copy url without the last" :
+then add url instead of  $sourceSASURI  $targetSASURI without clone and add "" in urls.
+
+az disk revoke-access -n $sourceDiskName -g $sourceRG
+
+az disk revoke-access -n $targetDiskName -g $targetRG
