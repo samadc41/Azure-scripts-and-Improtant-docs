@@ -16,8 +16,11 @@ subjectAltName = @alt_names
 [alt_names]
 DNS.1 = *.www.company.com
 DNS.2 = company.com
-DNS.3 = www.company.net 
-DNS.4 = company.net
+
 
 # after chnageing the deatils we need to run openssl req -new -sha256 -nodes -out company.csr -newkey rsa:2048 -keyout company.key -config <(cat test.txt).
 # this will genarate a key and csr file.
+
+# https://www.sslshopper.com/ssl-converter.html
+# use this link to generate .pfx file if we need.
+# Please use csr decoder and crt decoder to verify if domain name is correct.
